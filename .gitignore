@@ -1,0 +1,5 @@
+*.pyc
+*.sqlite
+*.sublime-*
+.coverage
+settings_local.py
