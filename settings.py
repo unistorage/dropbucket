@@ -1,4 +1,8 @@
+DEBUG = False
+
 SQLALCHEMY_DATABASE_URI =  'sqlite:////path/to/dropbucket/dev.sqlite'
+
+SECRET_KEY = ''
 
 FACEBOOK_CONSUMER_KEY = ''
 FACEBOOK_CONSUMER_SECRET = ''
