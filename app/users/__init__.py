@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint
+from flask import Blueprint, redirect, url_for
 from flask.ext.login import LoginManager
 
 from models import User
@@ -17,6 +17,10 @@ def configure(state):
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(user_id)
+
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        return redirect(url_for('users.login'))
 
 
 from .views import *

@@ -4,12 +4,15 @@ Werkzeug==0.8.3
 
 SQLAlchemy==0.7.9
 Flask-SQLAlchemy==0.16
+Flask-WTF==0.8
 
 Flask-Login==0.1.3
 Flask-OAuth==0.12
 facebook-sdk==0.4.0
 
 Flask-Script==0.5.1
+
+git+git://github.com/unistorage/unistorage-python-client.git
 
 argparse==1.2.1
 wsgiref==0.1.2

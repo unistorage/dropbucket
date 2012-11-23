@@ -10,7 +10,8 @@ db = SQLAlchemy(app)
 app.config.update(
     DEBUG=settings.DEBUG,
     SECRET_KEY=settings.SECRET_KEY,
-    SQLALCHEMY_DATABASE_URI=settings.SQLALCHEMY_DATABASE_URI
+    SQLALCHEMY_DATABASE_URI=settings.SQLALCHEMY_DATABASE_URI,
+    CSRF_ENABLED=settings.CSRF_ENABLED
 )
 
 import users

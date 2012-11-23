@@ -1,5 +1,5 @@
-from flask import request, render_template, flash, redirect, url_for
-from flask.ext.login import login_user, logout_user, current_user, login_required
+from flask import request, render_template, redirect, url_for
+from flask.ext.login import login_user, logout_user, login_required
 from flask_oauth import OAuth
 from facebook import GraphAPI
 
@@ -29,14 +29,14 @@ def get_or_create_and_login_user(data):
     login_user(user)
 
 
-twitter = oauth.remote_app('twitter',
+twitter = oauth.remote_app(
+    'twitter',
     base_url='https://api.twitter.com/1/',
     request_token_url='https://api.twitter.com/oauth/request_token',
     access_token_url='https://api.twitter.com/oauth/access_token',
     authorize_url='https://api.twitter.com/oauth/authenticate',
     consumer_key=settings.TWITTER_CONSUMER_KEY,
-    consumer_secret=settings.TWITTER_CONSUMER_SECRET
-)
+    consumer_secret=settings.TWITTER_CONSUMER_SECRET)
 twitter.tokengetter(lambda token=None: None)
 
 
@@ -55,15 +55,15 @@ def twitter_oauth_authorized(response):
     return redirect(next_url)
 
 
-facebook = oauth.remote_app('facebook',
+facebook = oauth.remote_app(
+    'facebook',
     base_url='https://graph.facebook.com/',
     request_token_url=None,
     access_token_url='/oauth/access_token',
     authorize_url='https://www.facebook.com/dialog/oauth',
     consumer_key=settings.FACEBOOK_CONSUMER_KEY,
     consumer_secret=settings.FACEBOOK_CONSUMER_SECRET,
-    request_token_params={'scope': 'email'}
-)
+    request_token_params={'scope': 'email'})
 facebook.tokengetter(lambda token=None: None)
 
 
@@ -83,14 +83,14 @@ def facebook_oauth_authorized(response):
     return redirect(next_url)
 
 
-vk = oauth.remote_app('vk',
+vk = oauth.remote_app(
+    'vk',
     base_url='https://api.vkontakte.ru/',
     request_token_url=None,
     access_token_url='/oauth/access_token',
     authorize_url='https://api.vkontakte.ru/oauth/authorize',
     consumer_key=settings.VK_CONSUMER_KEY,
-    consumer_secret=settings.VK_CONSUMER_SECRET,
-)
+    consumer_secret=settings.VK_CONSUMER_SECRET)
 vk.tokengetter(lambda token=None: None)
 
 

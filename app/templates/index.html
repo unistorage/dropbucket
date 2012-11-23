@@ -1,5 +1,45 @@
-{% if current_user.is_authenticated() %}
-  Hello, {{ current_user.name }} <a href="{{ url_for('users.logout') }}">Log out</a>
-{% else %}
-  Hello, anonymous <a href="{{ url_for('users.login') }}">Log in</a>
-{% endif %}
+{% from 'utils.html' import render_field %}
+{% extends 'base.html' %}
+
+{% block body %}
+
+<a href="{{ url_for('users.logout') }}">Выйти</a>
+<hr>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-error">
+      {{ message }}
+    </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<table>
+  <thead>
+    <tr>
+      <th>Имя файла</th>
+      <th>Ссылка на файл</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for file in current_user.files.all() %}
+    <tr>
+      <td>{{ file.name }}</td>
+      <td><a href="{{ file.get_dropbucket_url()  }}">{{ file.get_dropbucket_url() }}</a></td>
+      <td><a class="btn btn-small" href="{{ url_for('core.edit_file', id=file.id) }}"><i class="icon-edit"></i></a></td>
+      <td><a class="btn btn-small" href="{{ url_for('core.remove_file', id=file.id) }}"><i class="icon-remove"></i></a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<hr>
+
+<form action="{{ url_for('core.create_file') }}" method="post" enctype="multipart/form-data">
+  {# render_field(form.file) #}
+  <input type="file" name="file">
+  <input type="submit" value="Загрузить">
+</form>
+{% endblock %}

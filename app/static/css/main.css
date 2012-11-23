@@ -1,0 +1,13 @@
+body {
+  margin: 20px;
+}
+
+td {
+  padding: 3px 10px;
+}
+
+.login {
+  width: 300px;
+  text-align: center;
+  margin: 100px auto;
+}
