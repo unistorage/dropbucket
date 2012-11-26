@@ -2,13 +2,14 @@
 from flask import render_template, request, redirect, flash, url_for, abort
 from flask.ext.login import current_user, login_required
 from werkzeug import secure_filename
-from unistorage import UnistorageClient
 from unistorage import RegularFile as UnistorageRegularFile
+from unistorage.client import UnistorageClient, UnistorageError, UnistorageTimeout
 
 import settings
 from app import db
 from models import File
 from forms import FileForm
+from utils import NotRegularFileException
 from . import bp
 
 
@@ -25,14 +26,15 @@ def create_file():
     if not user_file:
         return redirect(url_for('core.index'))
 
-    filename = secure_filename(user_file.filename)
-
-    unistorage = UnistorageClient(
-        settings.UNISTORAGE_URL, settings.UNISTORAGE_ACCESS_TOKEN)
-    unistorage_file = unistorage.upload_file(
-        filename, user_file, type_id=current_user.id)
-
-    if isinstance(unistorage_file, UnistorageRegularFile):
+    unistorage = UnistorageClient(settings.UNISTORAGE_URL,
+                                  settings.UNISTORAGE_ACCESS_TOKEN)
+    try:
+        filename = secure_filename(user_file.filename)
+        unistorage_file = unistorage.upload_file(
+            filename, user_file, type_id=current_user.id)
+        if not isinstance(unistorage_file, UnistorageRegularFile):
+            raise NotRegularFileException()
+        
         db_file = File()
         db_file.user = current_user
         db_file.name = unistorage_file.name
@@ -40,7 +42,7 @@ def create_file():
         db_file.unistorage_url = unistorage_file.url
         db.session.add(db_file)
         db.session.commit()
-    else:
+    except (UnistorageError, UnistorageTimeout, NotRegularFileException):
         flash(u'Во время загрузки файла произошла ошибка. Попробуйте позже.')
     
     return redirect(url_for('.index'))
