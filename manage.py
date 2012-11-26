@@ -24,12 +24,11 @@ def create_db():
 @manager.command
 def update_expiring_files():
     """Updates file entries that will expire in a hour."""
-    now = datetime.utcnow()  
-    next_hour = now + timedelta(hours=1)
+    next_hour = datetime.utcnow() + timedelta(hours=1)
 
     unistorage = UnistorageClient(settings.UNISTORAGE_URL,
                                   settings.UNISTORAGE_ACCESS_TOKEN)
-    for db_file in File.query.filter(File.unistorage_valid_until.between(now, next_hour)).all():
+    for db_file in File.query.filter(File.unistorage_valid_until <= next_hour).all():
         try:
             unistorage_file = unistorage.get_file(db_file.unistorage_resource_uri)
             if not isinstance(unistorage_file, UnistorageRegularFile):
