@@ -51,6 +51,8 @@ def create_file():
 @login_required
 def edit_file(id):
     file = File.query.get(id) or abort(404)
+    if file.user != current_user:
+        abort(403)
     form = FileForm(obj=file)
     if form.validate_on_submit():
         form.populate_obj(file)
@@ -64,6 +66,8 @@ def edit_file(id):
 @login_required
 def remove_file(id):
     file = File.query.get(id) or abort(404)
+    if file.user != current_user:
+        abort(403)
     db.session.delete(file)
     db.session.commit()
     return redirect(url_for('.index'))
