@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime, timedelta
+
 from flask import render_template, request, redirect, flash, url_for, abort
 from flask.ext.login import current_user, login_required
 from werkzeug import secure_filename
@@ -38,6 +40,8 @@ def create_file():
         db_file.user = current_user
         db_file.name = unistorage_file.name
         db_file.unistorage_resource_uri = unistorage_file.resource_uri
+        db_file.unistorage_valid_until = datetime.utcnow() + \
+                timedelta(seconds=unistorage_file.ttl)
         db_file.unistorage_url = unistorage_file.url
         db.session.add(db_file)
         db.session.commit()

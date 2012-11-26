@@ -8,6 +8,7 @@ class File(db.Model):
     name = db.Column(db.String(200))
     path = db.Column(db.String(100))
     unistorage_resource_uri = db.Column(db.String(200))
+    unistorage_valid_until = db.Column(db.DateTime)
     unistorage_url = db.Column(db.String(200))
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
