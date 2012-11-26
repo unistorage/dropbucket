@@ -3,6 +3,7 @@
 
 {% block body %}
 
+Вы вошли через {{ current_user.oauth_app|capitalize }} как {{ current_user.name }}.
 <a href="{{ url_for('users.logout') }}">Выйти</a>
 <hr>
 {% with messages = get_flashed_messages() %}

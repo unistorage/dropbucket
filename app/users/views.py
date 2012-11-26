@@ -1,6 +1,8 @@
 from flask import request, render_template, redirect, url_for
 from flask.ext.login import login_user, logout_user, login_required
 from flask_oauth import OAuth
+from vkontakte import API as VkontakteAPI
+from twitter import Api as TwitterAPI
 from facebook import GraphAPI
 
 import settings
@@ -19,7 +21,7 @@ def get_or_create_and_login_user(data):
     user = User.query.filter_by(oauth_app=oauth_app,
                                 oauth_user_id=oauth_user_id).first()
     if user is None:
-        user = User('%s user' % oauth_app, oauth_app, oauth_user_id)
+        user = User(data['user_name'], oauth_app, oauth_user_id)
 
     user.oauth_token = data['token']
     user.oauth_secret = data['secret']
@@ -45,11 +47,20 @@ twitter.tokengetter(lambda token=None: None)
 @anonymous_user_required
 def twitter_oauth_authorized(response):
     if response is not None:
+        oauth_token = response['oauth_token']
+        oauth_token_secret = response['oauth_token_secret']
+        api = TwitterAPI(
+            consumer_key=settings.TWITTER_CONSUMER_KEY,
+            consumer_secret=settings.TWITTER_CONSUMER_SECRET,
+            access_token_key=oauth_token,
+            access_token_secret=oauth_token_secret)
+        twitter_profile = api.VerifyCredentials()
         get_or_create_and_login_user({
             'app': 'twitter',
             'user_id': response['user_id'],
-            'token': response['oauth_token'],
-            'secret': response['oauth_token_secret']
+            'user_name': twitter_profile.name,
+            'token': oauth_token,
+            'secret': oauth_token_secret
         })
     next_url = url_for('core.index')
     return redirect(next_url)
@@ -76,6 +87,7 @@ def facebook_oauth_authorized(response):
         get_or_create_and_login_user({
             'app': 'facebook',
             'user_id': profile['id'],
+            'user_name': profile['name'],
             'token': response['access_token'],
             'secret': None
         })
@@ -99,8 +111,13 @@ vk.tokengetter(lambda token=None: None)
 @anonymous_user_required
 def vk_oauth_authorized(response):
     if response is not None:
+        vk = VkontakteAPI(token=response['access_token'])
+        vk_profile = vk.get('getProfiles', uids=response['user_id'])[0]
+        user_name = '%s %s' % (vk_profile['first_name'], vk_profile['last_name'])
+
         get_or_create_and_login_user({
             'app': 'vk',
+            'user_name': user_name,
             'user_id': response['user_id'],
             'token': response['access_token'],
             'secret': None
