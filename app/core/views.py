@@ -29,9 +29,8 @@ def create_file():
     unistorage = UnistorageClient(settings.UNISTORAGE_URL,
                                   settings.UNISTORAGE_ACCESS_TOKEN)
     try:
-        filename = secure_filename(user_file.filename)
         unistorage_file = unistorage.upload_file(
-            filename, user_file, type_id=current_user.id)
+            user_file.filename, user_file, type_id=current_user.id)
         if not isinstance(unistorage_file, UnistorageRegularFile):
             raise NotRegularFileException()
         
@@ -71,14 +70,12 @@ def remove_file(id):
 
 
 @bp.route('/id/<int:id>')
-@login_required
 def redirect_id(id):
     file = File.query.get(id) or abort(404)
     return redirect(file.unistorage_url)
 
 
 @bp.route('/<path>')
-@login_required
 def redirect_path(path):
     file = File.query.filter(File.path == path).first() or abort(404)
     return redirect(file.unistorage_url)
