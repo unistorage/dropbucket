@@ -16,6 +16,13 @@
   {% endif %}
 {% endwith %}
 
+<form action="{{ url_for('core.create_file') }}" method="post" enctype="multipart/form-data">
+  <input type="file" name="file">
+  <input type="submit" value="Загрузить">
+</form>
+
+<hr>
+
 <table>
   <thead>
     <tr>
@@ -28,7 +35,7 @@
     {% for file in current_user.files.all() %}
     <tr>
       <td>{{ file.name }}</td>
-      <td><a href="{{ file.get_dropbucket_url()  }}">{{ file.get_dropbucket_url() }}</a></td>
+      <td><a href="{{ file.get_encoded_dropbucket_url()  }}">{{ file.get_dropbucket_url() }}</a></td>
       <td><a class="btn btn-small" href="{{ url_for('core.edit_file', id=file.id) }}"><i class="icon-edit"></i></a></td>
       <td><a class="btn btn-small" href="{{ url_for('core.remove_file', id=file.id) }}"><i class="icon-remove"></i></a></td>
     </tr>
@@ -36,11 +43,4 @@
   </tbody>
 </table>
 
-<hr>
-
-<form action="{{ url_for('core.create_file') }}" method="post" enctype="multipart/form-data">
-  {# render_field(form.file) #}
-  <input type="file" name="file">
-  <input type="submit" value="Загрузить">
-</form>
 {% endblock %}

@@ -1,3 +1,5 @@
+from urllib import unquote
+
 from flask import url_for
 
 from app import db
@@ -12,10 +14,15 @@ class File(db.Model):
     unistorage_url = db.Column(db.String(200))
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User', backref=db.backref('files', lazy='dynamic'))
+    user = db.relationship('User',
+        backref=db.backref('files', lazy='dynamic', order_by=id.desc()))
 
-    def get_dropbucket_url(self, external=True):
+    def get_encoded_dropbucket_url(self, external=True):
         if self.path:
             return url_for('core.redirect_path', path=self.path, _external=external)
         else:
             return url_for('core.redirect_id', id=self.id, _external=external)
+
+    def get_dropbucket_url(self, external=True):
+        encoded_url = self.get_encoded_dropbucket_url()
+        return unicode(unquote(encoded_url), 'utf8')
