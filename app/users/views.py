@@ -28,7 +28,7 @@ def get_or_create_and_login_user(data):
     db.session.add(user)
     db.session.commit()
 
-    login_user(user)
+    login_user(user, remember=True)
 
 
 twitter = oauth.remote_app(
