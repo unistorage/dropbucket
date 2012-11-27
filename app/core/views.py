@@ -83,7 +83,7 @@ def redirect_id(id):
     return redirect(file.unistorage_url)
 
 
-@bp.route('/<path>')
+@bp.route('/<path:path>')
 def redirect_path(path):
     file = File.query.filter(File.path == path).first() or abort(404)
     return redirect(file.unistorage_url)
