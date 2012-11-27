@@ -25,7 +25,7 @@ def validate_path_availability(form, field):
     except:
         pass
 
-    if endpoint != 'core.redirect_path':
+    if endpoint and endpoint != 'core.redirect_path':
         raise ValidationError(u'Такой путь уже занят.')
 
 
