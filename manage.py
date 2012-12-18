@@ -8,6 +8,7 @@ from flask.ext.script import Manager
 import settings
 from app import app, db
 from app.core.models import File
+from app.core.utils import NotRegularFileException
 from unistorage import RegularFile as UnistorageRegularFile
 from unistorage.client import UnistorageClient, UnistorageError, UnistorageTimeout
 
@@ -32,7 +33,7 @@ def update_expiring_files():
         try:
             unistorage_file = unistorage.get_file(db_file.unistorage_resource_uri)
             if not isinstance(unistorage_file, UnistorageRegularFile):
-                raise NotRegularFileException()
+                raise NotRegularFileException(db_file.unistorage_resource_uri)
             
             db_file.unistorage_url = unistorage_file.url
             db_file.unistorage_valid_until = datetime.utcnow() + \
