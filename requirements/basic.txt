@@ -15,7 +15,7 @@ vkontakte==1.3.2
 
 Flask-Script==0.5.1
 
-git+git://github.com/unistorage/unistorage-python-client.git@af5e70b0518293b1eaedfffe1fb380d48532f472
+git+git://github.com/unistorage/unistorage-python-client.git@933f799583dfc109ead7e291945a530005088cae
 
 argparse==1.2.1
 wsgiref==0.1.2
