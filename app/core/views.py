@@ -4,14 +4,15 @@ from datetime import datetime, timedelta
 from flask import render_template, request, redirect, flash, url_for, abort
 from flask.ext.login import current_user, login_required
 from werkzeug import secure_filename
-from unistorage import RegularFile as UnistorageRegularFile
+from unistorage import (RegularFile as UnistorageRegularFile,
+                        PendingFile as UnistoragePendingFile)
 from unistorage.client import UnistorageClient, UnistorageError, UnistorageTimeout
 
 import settings
 from app import db
-from models import File
-from forms import FileForm
-from utils import NotRegularFileException
+from .models import File
+from .forms import FileForm
+from .utils import UnexpectedFileException
 from . import bp
 
 
@@ -33,21 +34,26 @@ def create_file():
     try:
         unistorage_file = unistorage.upload_file(
             user_file.filename, user_file, type_id=current_user.id)
-        if not isinstance(unistorage_file, UnistorageRegularFile):
-            raise NotRegularFileException()
-        
+
         db_file = File()
         db_file.user = current_user
         db_file.name = unistorage_file.name
         db_file.unistorage_resource_uri = unistorage_file.resource_uri
-        db_file.unistorage_valid_until = datetime.utcnow() + \
-                timedelta(seconds=unistorage_file.ttl)
+
+        if isinstance(unistorage_file, UnistoragePendingFile):
+            raise UnexpectedFileException()
+
+        if isinstance(unistorage_file, UnistorageRegularFile):
+            db_file.unistorage_valid_until = None
+        else:
+            db_file.unistorage_valid_until = timedelta(seconds=unistorage_file.ttl)
+
         db_file.unistorage_url = unistorage_file.url
         db.session.add(db_file)
         db.session.commit()
-    except (UnistorageError, UnistorageTimeout, NotRegularFileException):
+    except (UnistorageError, UnistorageTimeout, UnexpectedFileException):
         flash(u'Во время загрузки файла произошла ошибка. Попробуйте позже.')
-    
+
     return redirect(url_for('.index'))
 
 

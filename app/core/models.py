@@ -14,8 +14,8 @@ class File(db.Model):
     unistorage_url = db.Column(db.String(200))
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User',
-        backref=db.backref('files', lazy='dynamic', order_by=id.desc()))
+    user = db.relationship(
+        'User', backref=db.backref('files', lazy='dynamic', order_by=id.desc()))
 
     def get_encoded_dropbucket_url(self, external=True):
         if self.path:

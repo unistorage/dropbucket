@@ -1,2 +1,2 @@
-class NotRegularFileException(Exception):
+class UnexpectedFileException(Exception):
     pass
